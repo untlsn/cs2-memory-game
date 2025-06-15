@@ -124,12 +124,16 @@ const onMouseLeave = () => {
 let selectedPreviously: GameBoardTile | undefined;
 let onClickDisabled = false;
 
+const playTileFlipAudio = useAudio('/audio/flip-tile.mp3');
+
 const onClick = () => {
   if (onClickDisabled) return;
   const hoveredTile = tiles.find(isTileHovered);
   if (!hoveredTile) return;
 
   hoveredTile.isFlipped = true;
+  playTileFlipAudio();
+
   if (!selectedPreviously) {
     selectedPreviously = hoveredTile;
     return;
