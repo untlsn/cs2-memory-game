@@ -2,42 +2,24 @@
 // const { seed, difficulty } = useGameBoardParams();
 
 const canvasRef = useTemplateRef('canvas');
-let canvasRect: DOMRectReadOnly | undefined;
+const {
+  syncCanvasSizesAndGetUnitSize,
+  getCtx,
+  checkIfTileIsHovered,
+  isAnyTileHovered,
+  onMouseMove,
+  onMouseLeave,
+} = useCanvasBinds(canvasRef);
 
-function syncCanvasSizes(canvas: HTMLCanvasElement) {
-  canvasRect = canvas.getBoundingClientRect();
-
-  canvas.width = canvasRect.width;
-  canvas.height = canvasRect.height;
-}
-
-const cursorPosition = reactive<[number, number]>([-1, -1]);
-let unitSize = 0;
-
-const isAnyTileHovered = ref(false);
 const tiles = useTiles();
 
-const isTileHovered = (tile: GameBoardTile) => {
-  const x = GAME_BOARD_MARGIN_SIZE + tile.x * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
-  const y = GAME_BOARD_MARGIN_SIZE + tile.y * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
-  const [cursorX, cursorY] = cursorPosition;
-
-  const isHovered = cursorX > x && cursorX < x + GAME_BOARD_TILE_SIZE
-    && cursorY > y && cursorY < y + GAME_BOARD_TILE_SIZE;
-
-  if (isHovered) isAnyTileHovered.value = true;
-  return isHovered;
-};
-
 onMounted(async () => {
-  const ctx = canvasRef.value?.getContext('2d');
+  const ctx = getCtx();
   if (!ctx) return;
-
-  syncCanvasSizes(ctx.canvas);
 
   const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + Math.sqrt(tiles.length) * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
 
-  unitSize = canvasRect!.width / requiredRowUnits;
+  const unitSize = syncCanvasSizesAndGetUnitSize(requiredRowUnits);
   const tileSize = unitSize * GAME_BOARD_TILE_SIZE;
   const marginSize = unitSize * GAME_BOARD_MARGIN_SIZE;
   const tileWithMarginSize = tileSize + marginSize;
@@ -52,7 +34,7 @@ onMounted(async () => {
 
   const getTileColor = (tile: GameBoardTile) => {
     if (tile.isFlipped) return GAME_BOARD_COLOR_GRADIENT_RARITY[tile.rarity]!;
-    if (isTileHovered(tile)) return GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT;
+    if (checkIfTileIsHovered(tile)) return GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT;
 
     return GAME_BOARD_COLOR_GRADIENT_GOLD;
   };
@@ -113,19 +95,6 @@ onMounted(async () => {
   });
 });
 
-const onMouseMove = (ev: MouseEvent) => requestAnimationFrame(() => {
-  const mouseX = ev.clientX - canvasRect!.left;
-  const mouseY = ev.clientY - canvasRect!.top;
-
-  cursorPosition[0] = mouseX / unitSize;
-  cursorPosition[1] = mouseY / unitSize;
-});
-
-const onMouseLeave = () => {
-  cursorPosition[0] = -1;
-  cursorPosition[1] = -1;
-};
-
 let selectedPreviously: GameBoardTile | undefined;
 let onClickDisabled = false;
 
@@ -134,7 +103,7 @@ const playSuccessAudio = useAudio('/audio/success.mp3');
 
 const onClick = () => {
   if (onClickDisabled) return;
-  const hoveredTile = tiles.find(isTileHovered);
+  const hoveredTile = tiles.find(checkIfTileIsHovered);
   if (!hoveredTile) return;
 
   hoveredTile.isFlipped = true;
