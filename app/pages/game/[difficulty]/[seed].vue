@@ -15,55 +15,7 @@ const cursorPosition = reactive<[number, number]>([-1, -1]);
 let unitSize = 0;
 
 const isAnyTileHovered = ref(false);
-const rowSize = 4;
-
-type GameBoardTile = {
-  x: number
-  y: number
-  isFlipped: boolean
-  rarity: number
-  weapon: number
-};
-
-const tilesCount = rowSize ** 2;
-
-const SeededRandom = (seed: number) => {
-  const m = 2 ** 31 - 1;
-  const a = 1103515235;
-  const c = 12325;
-
-  let lastNumber = seed % m;
-
-  return () => {
-    lastNumber = (a * lastNumber + c) % m;
-    return lastNumber / m;
-  };
-};
-
-const getRandom = SeededRandom(123);
-
-const shuffleArray = (arr: number[]) => {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(getRandom() * (i + 1));
-    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
-  }
-  return arr;
-};
-
-const weapons = shuffleArray([...Array(tilesCount / 2)].map((_, i) => i));
-const weaponsPair = shuffleArray([...weapons, ...weapons]);
-
-const tiles = reactive<GameBoardTile[]>(
-  weaponsPair.map((weapon, i) => {
-    return {
-      x: i % rowSize,
-      y: Math.floor(i / rowSize),
-      isFlipped: false,
-      rarity: GAME_BOARD_WEAPONS_RARITY[weapon]!,
-      weapon,
-    };
-  }),
-);
+const tiles = useTiles();
 
 const isTileHovered = (tile: GameBoardTile) => {
   const x = GAME_BOARD_MARGIN_SIZE + tile.x * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
@@ -83,7 +35,7 @@ onMounted(async () => {
 
   syncCanvasSizes(ctx.canvas);
 
-  const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + rowSize * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
+  const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + Math.sqrt(tiles.length) * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
 
   unitSize = canvasRect!.width / requiredRowUnits;
   const tileSize = unitSize * GAME_BOARD_TILE_SIZE;

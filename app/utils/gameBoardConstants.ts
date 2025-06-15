@@ -1,5 +1,10 @@
 export const GAME_BOARD_DIFFICULTY = ['easy', 'medium', 'hard'] as const;
 export type GameBoardDifficulty = typeof GAME_BOARD_DIFFICULTY[number];
+export const GAME_BOARD_DIFFICULTY_ROW_SIZE = {
+  easy: 4,
+  medium: 6,
+  hard: 8,
+} as const satisfies Record<GameBoardDifficulty, number>;
 
 // How many units per tile
 export const GAME_BOARD_TILE_SIZE = 5;
