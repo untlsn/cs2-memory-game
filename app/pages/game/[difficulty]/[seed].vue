@@ -15,7 +15,7 @@ const cursorPosition = reactive<[number, number]>([-1, -1]);
 let unitSize = 0;
 
 const isAnyTileHovered = ref(false);
-const rowSize = 5;
+const rowSize = 4;
 
 type GameBoardTile = {
   x: number
@@ -25,14 +25,20 @@ type GameBoardTile = {
   weapon: number
 };
 
+const tilesCount = rowSize ** 2;
+
+const weapons = [...Array(tilesCount / 2)].map((_, i) => i);
+const weaponsPair = [...weapons, ...weapons];
+
 const tiles = reactive<GameBoardTile[]>(
-  [...Array(rowSize ** 2)].map((_, i) => {
+  [...Array(tilesCount)].map((_, i) => {
+    const weapon = weaponsPair.pop()!;
     return {
       x: i % rowSize,
       y: Math.floor(i / rowSize),
       isFlipped: false,
-      rarity: Math.floor(Math.random() * 6),
-      weapon: i,
+      rarity: GAME_BOARD_WEAPONS_RARITY[weapon]!,
+      weapon,
     };
   }),
 );
@@ -150,6 +156,7 @@ let selectedPreviously: GameBoardTile | undefined;
 let onClickDisabled = false;
 
 const playTileFlipAudio = useAudio('/audio/flip-tile.mp3');
+const playSuccessAudio = useAudio('/audio/success.mp3');
 
 const onClick = () => {
   if (onClickDisabled) return;
@@ -166,9 +173,15 @@ const onClick = () => {
 
   onClickDisabled = true;
   setTimeout(() => {
+    if (hoveredTile.weapon !== selectedPreviously!.weapon) {
+      hoveredTile.isFlipped = false;
+      selectedPreviously!.isFlipped = false;
+    }
+    else {
+      playSuccessAudio();
+    }
+
     onClickDisabled = false;
-    hoveredTile.isFlipped = false;
-    selectedPreviously!.isFlipped = false;
     selectedPreviously = undefined;
   }, 1000);
 };
