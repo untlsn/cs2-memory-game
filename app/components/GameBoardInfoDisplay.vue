@@ -45,8 +45,8 @@ const time = computed(() => {
 </script>
 
 <template>
-  <div class="mb-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+  <div class="mb-6 p-4">
+    <div class="flex flex-wrap gap-4 mx-auto">
       <GameBoardInfoDisplayCard
         label="Time"
         :value="time"

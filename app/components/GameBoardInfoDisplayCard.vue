@@ -10,7 +10,7 @@ defineProps<{
 <template>
   <UiCard
     :style="{ '--card-color': color }"
-    class="bg-gray-800 border-gray-700"
+    class="bg-gray-800 border-gray-700 grow-1"
   >
     <UiCardContent class="p-4">
       <div class="flex items-center gap-3">
