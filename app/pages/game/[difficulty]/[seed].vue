@@ -27,9 +27,24 @@ type GameBoardTile = {
 
 const tilesCount = rowSize ** 2;
 
+const SeededRandom = (seed: number) => {
+  const m = 2 ** 31 - 1;
+  const a = 1103515235;
+  const c = 12325;
+
+  let lastNumber = seed % m;
+
+  return () => {
+    lastNumber = (a * lastNumber + c) % m;
+    return lastNumber / m;
+  };
+};
+
+const getRandom = SeededRandom(123);
+
 const shuffleArray = (arr: number[]) => {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(getRandom() * (i + 1));
     [arr[i], arr[j]] = [arr[j]!, arr[i]!];
   }
   return arr;
