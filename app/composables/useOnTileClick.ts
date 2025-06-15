@@ -25,6 +25,8 @@ export function useOnTileClick(getHoveredTile: () => GameBoardTile | undefined) 
         selectedPreviously!.isFlipped = false;
       }
       else {
+        hoveredTile.isMatched = true;
+        selectedPreviously!.isMatched = true;
         playSuccessAudio();
       }
 

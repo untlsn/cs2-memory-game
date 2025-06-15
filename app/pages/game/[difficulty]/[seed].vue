@@ -56,19 +56,24 @@ onMounted(async () => {
   });
 });
 
+const moves = ref(0);
+
 const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
-    <GameBoardInfoDisplay />
+    <GameBoardInfoDisplay
+      :moves
+      :tiles
+    />
     <canvas
       ref="canvas"
       class="mx-auto size-[70vmin]"
       :class="isAnyTileHovered && !onClick.disabled ? 'cursor-pointer' : ''"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
-      @click="onClick"
+      @click="onClick(); moves++"
     />
   </div>
 </template>

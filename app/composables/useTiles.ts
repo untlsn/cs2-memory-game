@@ -15,6 +15,7 @@ export type GameBoardTile = {
   x: number
   y: number
   isFlipped: boolean
+  isMatched: boolean
   rarity: number
   weapon: number
 };
@@ -46,6 +47,7 @@ export function useTiles() {
         x: i % rowSize,
         y: Math.floor(i / rowSize),
         isFlipped: false,
+        isMatched: false,
         rarity: GAME_BOARD_WEAPONS_RARITY[weapon]!,
         weapon,
       };

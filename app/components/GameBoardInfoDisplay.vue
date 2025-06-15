@@ -1,8 +1,15 @@
 <script setup lang="ts">
 const time = '00:00:00';
-const moves = 0;
-const tilesMatch = 0;
-const allTiles = 0;
+
+const props = defineProps<{ moves: number, tiles: GameBoardTile[] }>();
+
+const tilesMatched = computed(() => {
+  let count = 0;
+  for (const tile of props.tiles) {
+    if (tile.isMatched) count++;
+  }
+  return count / 2;
+});
 </script>
 
 <template>
@@ -22,7 +29,7 @@ const allTiles = 0;
       />
       <GameBoardInfoDisplayCard
         label="Pairs Found"
-        :value="`${tilesMatch} / ${allTiles}`"
+        :value="`${tilesMatched} / ${tiles.length / 2}`"
         icon="lucide:check"
         color="var(--color-green-600)"
       />
