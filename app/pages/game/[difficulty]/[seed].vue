@@ -42,11 +42,11 @@ onMounted(async () => {
     isAnyTileHovered.value = false;
     ctx.filter = `blur(5px)`;
     for (const tile of tiles) {
-      drawRect(units.getTilePosition(tile), 'rgba(0, 0, 0, 0.1)');
+      drawRect(units.getTilePosition(tile), 'rgba(0, 0, 0, 0.5)');
     }
     ctx.filter = `blur(3px)`;
     for (const tile of tiles) {
-      drawRect(units.getTileParallaxPosition(tile, 0.005), 'rgba(0, 0, 0, 0.1)');
+      drawRect(units.getTileParallaxPosition(tile, 0.005), 'rgba(0, 0, 0, 0.7)');
     }
     ctx.filter = 'none';
     for (const tile of tiles) {
@@ -60,7 +60,7 @@ const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen bg-gray-900 text-white">
     <GameBoardInfoDisplay />
     <canvas
       ref="canvas"
