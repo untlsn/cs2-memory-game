@@ -12,4 +12,11 @@ export class CtxUnitCalculator {
     this.margin = this.unitSize * GAME_BOARD_MARGIN_SIZE;
     this.tileWithMargin = this.tile + this.margin;
   }
+
+  getTilePosition(tile: GameBoardTile): [number, number] {
+    return [
+      this.margin + tile.x * this.tileWithMargin,
+      this.margin + tile.y * this.tileWithMargin,
+    ];
+  };
 }

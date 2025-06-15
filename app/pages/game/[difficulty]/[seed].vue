@@ -19,14 +19,6 @@ onMounted(async () => {
 
   const units = new CtxUnitCalculator(ctx, syncCanvasSizesAndGetUnitSize(requiredRowUnits));
 
-  const createGradient = (x: number, y: number, gradientColors: readonly [string, string, string]) => {
-    const gradient = ctx.createLinearGradient(x, y, x + units.tile, y + units.tile);
-    gradient.addColorStop(0, gradientColors[0]);
-    gradient.addColorStop(0.5, gradientColors[1]);
-    gradient.addColorStop(1, gradientColors[2]);
-    return gradient;
-  };
-
   const getTileColor = (tile: GameBoardTile) => {
     if (tile.isFlipped) return GAME_BOARD_COLOR_GRADIENT_RARITY[tile.rarity]!;
     if (checkIfTileIsHovered(tile)) return GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT;
@@ -34,35 +26,19 @@ onMounted(async () => {
     return GAME_BOARD_COLOR_GRADIENT_GOLD;
   };
 
-  const drawWeapon = await WeaponPainter(units);
+  const drawRect = await RoundedRectPainter(
+    units,
+    (tile) => {
+      const [x, y] = units.getTilePosition(tile);
+      const colors = getTileColor(tile);
 
-  const drawRect = (tile: GameBoardTile) => {
-    const x = units.margin + tile.x * units.tileWithMargin;
-    const y = units.margin + tile.y * units.tileWithMargin;
-    const radius = units.tile * GAME_BOARD_RADIUS_PERCENTAGE;
-
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + units.tile - radius, y);
-    ctx.arcTo(x + units.tile, y, x + units.tile, y + radius, radius);
-    ctx.lineTo(x + units.tile, y + units.tile - radius);
-    ctx.arcTo(
-      x + units.tile,
-      y + units.tile,
-      x + units.tile - radius,
-      y + units.tile,
-      radius,
-    );
-    ctx.lineTo(x + radius, y + units.tile);
-    ctx.arcTo(x, y + units.tile, x, y + units.tile - radius, radius);
-    ctx.lineTo(x, y + radius);
-    ctx.arcTo(x, y, x + radius, y, radius);
-    ctx.closePath();
-
-    ctx.fillStyle = createGradient(x, y, getTileColor(tile));
-    ctx.fill();
-    if (tile.isFlipped) drawWeapon(tile);
-  };
+      const gradient = ctx.createLinearGradient(x, y, x + units.tile, y + units.tile);
+      gradient.addColorStop(0, colors[0]);
+      gradient.addColorStop(0.5, colors[1]);
+      gradient.addColorStop(1, colors[2]);
+      return gradient;
+    },
+  );
 
   watchEffect(() => {
     isAnyTileHovered.value = false;
