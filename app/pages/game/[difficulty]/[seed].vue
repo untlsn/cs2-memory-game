@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import GameBoardInfoDisplay from '~/components/GameBoardInfoDisplay.vue';
+
 const canvasRef = useTemplateRef('canvas');
 const {
   syncCanvasSizesAndGetUnitSize,
@@ -59,6 +61,7 @@ const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
 
 <template>
   <div>
+    <GameBoardInfoDisplay />
     <canvas
       ref="canvas"
       class="mx-auto size-[70vmin]"
