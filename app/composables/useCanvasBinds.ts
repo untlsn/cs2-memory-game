@@ -34,9 +34,7 @@ export function useCanvasBinds(canvasRef: Readonly<ShallowRef<HTMLCanvasElement 
   };
 
   return {
-    isAnyTileHovered,
-    checkIfTileIsHovered,
-    syncCanvasSizesAndGetUnitSize,
+    isAnyTileHovered, checkIfTileIsHovered, syncCanvasSizesAndGetUnitSize, cursorPosition,
     getCtx() {
       return canvasRef.value?.getContext('2d');
     },

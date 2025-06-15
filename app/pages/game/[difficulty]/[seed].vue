@@ -7,6 +7,7 @@ const {
   isAnyTileHovered,
   onMouseMove,
   onMouseLeave,
+  cursorPosition,
 } = useCanvasBinds(canvasRef);
 
 const tiles = useTiles();
@@ -17,7 +18,11 @@ onMounted(async () => {
 
   const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + Math.sqrt(tiles.length) * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
 
-  const units = new CtxUnitCalculator(ctx, syncCanvasSizesAndGetUnitSize(requiredRowUnits));
+  const units = new CtxUnitCalculator(
+    ctx,
+    syncCanvasSizesAndGetUnitSize(requiredRowUnits),
+    cursorPosition,
+  );
 
   const getTileColor = (tile: GameBoardTile) => {
     if (tile.isFlipped) return GAME_BOARD_COLOR_GRADIENT_RARITY[tile.rarity]!;
@@ -26,14 +31,26 @@ onMounted(async () => {
     return GAME_BOARD_COLOR_GRADIENT_GOLD;
   };
 
-  const drawRect = await RoundedRectPainter(
-    units,
-    GradientCreator(units, getTileColor),
-  );
+  const drawWeapon = await WeaponPainter(units);
+  const drawRect = await RoundedRectPainter(units);
+  const createGradient = GradientCreator(units, getTileColor);
 
   watchEffect(() => {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     isAnyTileHovered.value = false;
-    tiles.forEach(drawRect);
+    ctx.filter = `blur(5px)`;
+    for (const tile of tiles) {
+      drawRect(units.getTilePosition(tile), 'rgba(0, 0, 0, 0.1)');
+    }
+    ctx.filter = `blur(3px)`;
+    for (const tile of tiles) {
+      drawRect(units.getTileParallaxPosition(tile, 0.005), 'rgba(0, 0, 0, 0.1)');
+    }
+    ctx.filter = 'none';
+    for (const tile of tiles) {
+      drawRect(units.getTileParallaxPosition(tile, 0.01), createGradient(tile, 0.01));
+      if (tile.isFlipped) drawWeapon(tile, 0.01);
+    }
   });
 });
 
