@@ -95,39 +95,7 @@ onMounted(async () => {
   });
 });
 
-let selectedPreviously: GameBoardTile | undefined;
-let onClickDisabled = false;
-
-const playTileFlipAudio = useAudio('/audio/flip-tile.mp3');
-const playSuccessAudio = useAudio('/audio/success.mp3');
-
-const onClick = () => {
-  if (onClickDisabled) return;
-  const hoveredTile = tiles.find(checkIfTileIsHovered);
-  if (!hoveredTile) return;
-
-  hoveredTile.isFlipped = true;
-  playTileFlipAudio();
-
-  if (!selectedPreviously) {
-    selectedPreviously = hoveredTile;
-    return;
-  }
-
-  onClickDisabled = true;
-  setTimeout(() => {
-    if (hoveredTile.weapon !== selectedPreviously!.weapon) {
-      hoveredTile.isFlipped = false;
-      selectedPreviously!.isFlipped = false;
-    }
-    else {
-      playSuccessAudio();
-    }
-
-    onClickDisabled = false;
-    selectedPreviously = undefined;
-  }, 1000);
-};
+const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
 </script>
 
 <template>
@@ -135,7 +103,7 @@ const onClick = () => {
     <canvas
       ref="canvas"
       class="mx-auto size-[70vmin]"
-      :class="isAnyTileHovered && !onClickDisabled ? 'cursor-pointer' : ''"
+      :class="isAnyTileHovered && !onClick.disabled ? 'cursor-pointer' : ''"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
       @click="onClick"
