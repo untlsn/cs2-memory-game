@@ -80,6 +80,9 @@ const onMove = () => {
       :class="isAnyTileHovered && !onClick.disabled ? 'cursor-pointer' : ''"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
+
+      @touchmove.prevent="onMouseMove($event.touches[0]!)"
+      @touchend="onClick() && onMove(); onMouseLeave()"
       @click="onClick() && onMove()"
     />
   </div>
