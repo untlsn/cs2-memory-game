@@ -57,8 +57,14 @@ onMounted(async () => {
 });
 
 const moves = ref(0);
+const timeStart = ref<Date>();
 
 const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
+
+const onMove = () => {
+  timeStart.value ||= new Date();
+  moves.value++;
+};
 </script>
 
 <template>
@@ -66,6 +72,7 @@ const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
     <GameBoardInfoDisplay
       :moves
       :tiles
+      :time-start
     />
     <canvas
       ref="canvas"
@@ -73,7 +80,7 @@ const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
       :class="isAnyTileHovered && !onClick.disabled ? 'cursor-pointer' : ''"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
-      @click="onClick(); moves++"
+      @click="onClick(); onMove()"
     />
   </div>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-const time = '00:00:00';
+import { onWatcherCleanup } from 'vue';
+import * as D from 'date-fns';
 
-const props = defineProps<{ moves: number, tiles: GameBoardTile[] }>();
+const props = defineProps<{ moves: number, tiles: GameBoardTile[], timeStart?: Date }>();
 
 const tilesMatched = computed(() => {
   let count = 0;
@@ -9,6 +10,37 @@ const tilesMatched = computed(() => {
     if (tile.isMatched) count++;
   }
   return count / 2;
+});
+
+const metronome = ref(false);
+
+watchEffect(() => {
+  if (!props.timeStart) return;
+  const interval = setInterval(() => {
+    metronome.value = !metronome.value;
+  }, 1000);
+  onWatcherCleanup(() => {
+    clearInterval(interval);
+  });
+});
+
+const formatNumber = (num: number | undefined) => {
+  num ||= 0;
+  return num.toString().padStart(2, '0');
+};
+
+const time = computed(() => {
+  void metronome.value;
+
+  const timeStart = props.timeStart;
+  if (!timeStart) return '00:00:00';
+
+  const duration = D.intervalToDuration({
+    start: timeStart,
+    end: new Date(),
+  });
+
+  return `${formatNumber(duration.hours)}:${formatNumber(duration.minutes)}:${formatNumber(duration.seconds)}`;
 });
 </script>
 
