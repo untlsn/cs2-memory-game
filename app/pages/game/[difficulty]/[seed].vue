@@ -11,6 +11,11 @@ function syncCanvasSizes(canvas: HTMLCanvasElement) {
   canvas.height = canvasRect.height;
 }
 
+const cursorPosition = reactive<[number, number]>([-1, -1]);
+let unitSize = 0;
+
+const isAnyTileHovered = ref(false);
+
 onMounted(() => {
   const ctx = canvasRef.value?.getContext('2d');
   if (!ctx) return;
@@ -20,7 +25,7 @@ onMounted(() => {
   const rowSize = 5;
   const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + rowSize * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
 
-  const unitSize = canvasRect!.width / requiredRowUnits;
+  unitSize = canvasRect!.width / requiredRowUnits;
   const tileSize = unitSize * GAME_BOARD_TILE_SIZE;
   const marginSize = unitSize * GAME_BOARD_MARGIN_SIZE;
   const tileWithMarginSize = tileSize + marginSize;
@@ -33,7 +38,28 @@ onMounted(() => {
     return gradient;
   };
 
+  const isTileHovered = (index: number) => {
+    const x = GAME_BOARD_MARGIN_SIZE + (index % rowSize) * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
+    const y = GAME_BOARD_MARGIN_SIZE + (Math.floor(index / rowSize)) * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
+    const [cursorX, cursorY] = cursorPosition;
+
+    const isHovered = cursorX > x && cursorX < x + GAME_BOARD_TILE_SIZE
+      && cursorY > y && cursorY < y + GAME_BOARD_TILE_SIZE;
+
+    if (isHovered) isAnyTileHovered.value = true;
+    return isHovered;
+  };
+
+  const getTileColor = (index: number) => {
+    if (isTileHovered(index)) {
+      return GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT;
+    }
+
+    return GAME_BOARD_COLOR_GRADIENT_GOLD;
+  };
+
   const drawRect = (
+    index: number,
     x: number,
     y: number,
   ) => {
@@ -57,17 +83,34 @@ onMounted(() => {
     ctx.arcTo(x, y, x + radius, y, radius);
     ctx.closePath();
 
-    ctx.fillStyle = createGradient(x, y, GAME_BOARD_COLOR_GRADIENT_GOLD);
+    ctx.fillStyle = createGradient(x, y, getTileColor(index));
     ctx.fill();
   };
 
-  for (let i = 0; i < rowSize ** 2; i++) {
-    drawRect(
-      marginSize + (i % rowSize) * tileWithMarginSize,
-      marginSize + Math.floor(i / rowSize) * tileWithMarginSize,
-    );
-  }
+  watchEffect(() => {
+    isAnyTileHovered.value = false;
+    for (let i = 0; i < rowSize ** 2; i++) {
+      drawRect(
+        i,
+        marginSize + (i % rowSize) * tileWithMarginSize,
+        marginSize + Math.floor(i / rowSize) * tileWithMarginSize,
+      );
+    }
+  });
 });
+
+const onMouseMove = (ev: MouseEvent) => requestAnimationFrame(() => {
+  const mouseX = ev.clientX - canvasRect!.left;
+  const mouseY = ev.clientY - canvasRect!.top;
+
+  cursorPosition[0] = mouseX / unitSize;
+  cursorPosition[1] = mouseY / unitSize;
+});
+
+const onMouseLeave = () => {
+  cursorPosition[0] = -1;
+  cursorPosition[1] = -1;
+};
 </script>
 
 <template>
@@ -75,6 +118,9 @@ onMounted(() => {
     <canvas
       ref="canvas"
       class="mx-auto size-[70vmin]"
+      :class="isAnyTileHovered ? 'cursor-pointer' : ''"
+      @mousemove="onMouseMove"
+      @mouseleave="onMouseLeave"
     />
   </div>
 </template>

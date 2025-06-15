@@ -11,7 +11,7 @@ export const GAME_BOARD_RADIUS_PERCENTAGE = 0.1;
 // Default gradient of tile
 export const GAME_BOARD_COLOR_GRADIENT_GOLD = ['#A57C00', '#FEDB73', '#FFD700'] as const;
 // Bright gradient of tile used for hover effect
-export const GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT = ['#000000', '#000000', '#000000'] as const;
+export const GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT = ['#BBA333', '#FFEFB9', '#FFEBB2'] as const;
 // Rarity gradients of tile used for flipped tiles
 export const GAME_BOARD_COLOR_GRADIENT_RARITY = [
   ['#3F3F3F', '#A0A0A0', '#707070'], // Grey
