@@ -150,7 +150,7 @@ const onClick = () => {
     <canvas
       ref="canvas"
       class="mx-auto size-[70vmin]"
-      :class="isAnyTileHovered ? 'cursor-pointer' : ''"
+      :class="isAnyTileHovered && !onClickDisabled ? 'cursor-pointer' : ''"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
       @click="onClick"
