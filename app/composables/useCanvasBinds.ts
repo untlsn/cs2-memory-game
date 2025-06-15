@@ -22,6 +22,7 @@ export function useCanvasBinds(canvasRef: Readonly<ShallowRef<HTMLCanvasElement 
   const isAnyTileHovered = ref(false);
 
   const checkIfTileIsHovered = (tile: GameBoardTile) => {
+    if (tile.isFlipped) return false;
     const x = GAME_BOARD_MARGIN_SIZE + tile.x * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
     const y = GAME_BOARD_MARGIN_SIZE + tile.y * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
     const [cursorX, cursorY] = cursorPosition;

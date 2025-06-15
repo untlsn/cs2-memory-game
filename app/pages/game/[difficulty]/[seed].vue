@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import GameBoardInfoDisplay from '~/components/GameBoardInfoDisplay.vue';
+
 const canvasRef = useTemplateRef('canvas');
 const {
   syncCanvasSizesAndGetUnitSize,
@@ -40,11 +42,11 @@ onMounted(async () => {
     isAnyTileHovered.value = false;
     ctx.filter = `blur(5px)`;
     for (const tile of tiles) {
-      drawRect(units.getTilePosition(tile), 'rgba(0, 0, 0, 0.1)');
+      drawRect(units.getTilePosition(tile), 'rgba(0, 0, 0, 0.5)');
     }
     ctx.filter = `blur(3px)`;
     for (const tile of tiles) {
-      drawRect(units.getTileParallaxPosition(tile, 0.005), 'rgba(0, 0, 0, 0.1)');
+      drawRect(units.getTileParallaxPosition(tile, 0.005), 'rgba(0, 0, 0, 0.7)');
     }
     ctx.filter = 'none';
     for (const tile of tiles) {
@@ -54,18 +56,31 @@ onMounted(async () => {
   });
 });
 
+const moves = ref(0);
+const timeStart = ref<Date>();
+
 const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
+
+const onMove = () => {
+  timeStart.value ||= new Date();
+  moves.value++;
+};
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen bg-gray-900 text-white">
+    <GameBoardInfoDisplay
+      :moves
+      :tiles
+      :time-start
+    />
     <canvas
       ref="canvas"
       class="mx-auto size-[70vmin]"
       :class="isAnyTileHovered && !onClick.disabled ? 'cursor-pointer' : ''"
       @mousemove="onMouseMove"
       @mouseleave="onMouseLeave"
-      @click="onClick"
+      @click="onClick() && onMove()"
     />
   </div>
 </template>
