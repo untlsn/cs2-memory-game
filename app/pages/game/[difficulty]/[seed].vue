@@ -69,8 +69,8 @@ onMounted(() => {
   };
 
   const getTileColor = (tile: GameBoardTile) => {
-    if (isTileHovered(tile)) return GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT;
     if (tile.isFlipped) return GAME_BOARD_COLOR_GRADIENT_RARITY[tile.rarity]!;
+    if (isTileHovered(tile)) return GAME_BOARD_COLOR_GRADIENT_GOLD_BRIGHT;
 
     return GAME_BOARD_COLOR_GRADIENT_GOLD;
   };
@@ -121,11 +121,27 @@ const onMouseLeave = () => {
   cursorPosition[1] = -1;
 };
 
+let selectedPreviously: GameBoardTile | undefined;
+let onClickDisabled = false;
+
 const onClick = () => {
+  if (onClickDisabled) return;
   const hoveredTile = tiles.find(isTileHovered);
   if (!hoveredTile) return;
 
   hoveredTile.isFlipped = true;
+  if (!selectedPreviously) {
+    selectedPreviously = hoveredTile;
+    return;
+  }
+
+  onClickDisabled = true;
+  setTimeout(() => {
+    onClickDisabled = false;
+    hoveredTile.isFlipped = false;
+    selectedPreviously!.isFlipped = false;
+    selectedPreviously = undefined;
+  }, 1000);
 };
 </script>
 
