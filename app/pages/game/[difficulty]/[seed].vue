@@ -27,12 +27,19 @@ type GameBoardTile = {
 
 const tilesCount = rowSize ** 2;
 
-const weapons = [...Array(tilesCount / 2)].map((_, i) => i);
-const weaponsPair = [...weapons, ...weapons];
+const shuffleArray = (arr: number[]) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
+  }
+  return arr;
+};
+
+const weapons = shuffleArray([...Array(tilesCount / 2)].map((_, i) => i));
+const weaponsPair = shuffleArray([...weapons, ...weapons]);
 
 const tiles = reactive<GameBoardTile[]>(
-  [...Array(tilesCount)].map((_, i) => {
-    const weapon = weaponsPair.pop()!;
+  weaponsPair.map((weapon, i) => {
     return {
       x: i % rowSize,
       y: Math.floor(i / rowSize),
