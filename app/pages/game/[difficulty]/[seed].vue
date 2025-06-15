@@ -28,16 +28,7 @@ onMounted(async () => {
 
   const drawRect = await RoundedRectPainter(
     units,
-    (tile) => {
-      const [x, y] = units.getTilePosition(tile);
-      const colors = getTileColor(tile);
-
-      const gradient = ctx.createLinearGradient(x, y, x + units.tile, y + units.tile);
-      gradient.addColorStop(0, colors[0]);
-      gradient.addColorStop(0.5, colors[1]);
-      gradient.addColorStop(1, colors[2]);
-      return gradient;
-    },
+    GradientCreator(units, getTileColor),
   );
 
   watchEffect(() => {
