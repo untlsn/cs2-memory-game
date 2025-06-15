@@ -1,14 +1,8 @@
-export async function RoundedRectPainter(
-  units: CtxUnitCalculator,
-  getGradient: (tile: GameBoardTile) => CanvasGradient,
-) {
+export async function RoundedRectPainter(units: CtxUnitCalculator) {
   const { ctx } = units;
-  const drawWeapon = await WeaponPainter(units);
+  const radius = units.tile * GAME_BOARD_RADIUS_PERCENTAGE;
 
-  return (tile: GameBoardTile) => {
-    const [x, y] = units.getTilePosition(tile);
-    const radius = units.tile * GAME_BOARD_RADIUS_PERCENTAGE;
-
+  return ([x, y]: Cords, color: string | CanvasGradient) => {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
     ctx.lineTo(x + units.tile - radius, y);
@@ -27,8 +21,7 @@ export async function RoundedRectPainter(
     ctx.arcTo(x, y, x + radius, y, radius);
     ctx.closePath();
 
-    ctx.fillStyle = getGradient(tile);
+    ctx.fillStyle = color;
     ctx.fill();
-    if (tile.isFlipped) drawWeapon(tile);
   };
 }

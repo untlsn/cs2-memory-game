@@ -2,8 +2,8 @@ export function GradientCreator(
   units: CtxUnitCalculator,
   selectColor: (tile: GameBoardTile) => readonly [string, string, string],
 ) {
-  return (tile: GameBoardTile) => {
-    const [x, y] = units.getTilePosition(tile);
+  return (tile: GameBoardTile, parallaxStrength: number) => {
+    const [x, y] = units.getTileParallaxPosition(tile, parallaxStrength);
     const colors = selectColor(tile);
 
     const gradient = units.ctx.createLinearGradient(x, y, x + units.tile, y + units.tile);

@@ -16,13 +16,12 @@ export async function WeaponPainter(units: CtxUnitCalculator) {
   const imageSize = units.tile * GAME_BOARD_TILE_IMAGE_PERCENTAGE;
   const imagePadding = units.tile * (1 - GAME_BOARD_TILE_IMAGE_PERCENTAGE) / 2;
 
-  return (tile: GameBoardTile) => {
-    const x = units.margin + tile.x * units.tileWithMargin + imagePadding;
-    const y = units.margin + tile.y * units.tileWithMargin + imagePadding;
+  return (tile: GameBoardTile, parallaxStrength: number) => {
+    const [x, y] = units.getTileParallaxPosition(tile, parallaxStrength);
 
     const image = loadedImages[tile.weapon];
     if (!image) return;
 
-    units.ctx.drawImage(image, x, y, imageSize, imageSize);
+    units.ctx.drawImage(image, x + imagePadding, y + imagePadding, imageSize, imageSize);
   };
 }
