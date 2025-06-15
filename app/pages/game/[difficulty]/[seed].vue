@@ -1,13 +1,29 @@
 <script setup lang="ts">
 // const { seed, difficulty } = useGameBoardParams();
 
-const canvas = useTemplateRef('canvas');
+const canvasRef = useTemplateRef('canvas');
+let canvasRect: DOMRectReadOnly | undefined;
+
+function syncCanvasSizes(canvas: HTMLCanvasElement) {
+  canvasRect = canvas.getBoundingClientRect();
+
+  canvas.width = canvasRect.width;
+  canvas.height = canvasRect.height;
+}
 
 onMounted(() => {
-  const ctx = canvas.value?.getContext('2d');
+  const ctx = canvasRef.value?.getContext('2d');
   if (!ctx) return;
 
-  const tileSize = 50;
+  syncCanvasSizes(ctx.canvas);
+
+  const rowSize = 5;
+  const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + rowSize * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
+
+  const unitSize = canvasRect!.width / requiredRowUnits;
+  const tileSize = unitSize * GAME_BOARD_TILE_SIZE;
+  const marginSize = unitSize * GAME_BOARD_MARGIN_SIZE;
+  const tileWithMarginSize = tileSize + marginSize;
 
   const createGradient = (x: number, y: number, gradientColors: readonly [string, string, string]) => {
     const gradient = ctx.createLinearGradient(x, y, x + tileSize, y + tileSize);
@@ -45,13 +61,21 @@ onMounted(() => {
     ctx.fill();
   };
 
-  drawRect(0, 0);
+  for (let i = 0; i < rowSize ** 2; i++) {
+    drawRect(
+      marginSize + (i % rowSize) * tileWithMarginSize,
+      marginSize + Math.floor(i / rowSize) * tileWithMarginSize,
+    );
+  }
 });
 </script>
 
 <template>
   <div>
-    <canvas ref="canvas" />
+    <canvas
+      ref="canvas"
+      class="mx-auto size-[70vmin]"
+    />
   </div>
 </template>
 
