@@ -22,6 +22,7 @@ type GameBoardTile = {
   y: number
   isFlipped: boolean
   rarity: number
+  weapon: number
 };
 
 const tiles = reactive<GameBoardTile[]>(
@@ -31,6 +32,7 @@ const tiles = reactive<GameBoardTile[]>(
       y: Math.floor(i / rowSize),
       isFlipped: false,
       rarity: Math.floor(Math.random() * 6),
+      weapon: i,
     };
   }),
 );
@@ -47,7 +49,7 @@ const isTileHovered = (tile: GameBoardTile) => {
   return isHovered;
 };
 
-onMounted(() => {
+onMounted(async () => {
   const ctx = canvasRef.value?.getContext('2d');
   if (!ctx) return;
 
@@ -75,6 +77,28 @@ onMounted(() => {
     return GAME_BOARD_COLOR_GRADIENT_GOLD;
   };
 
+  const loadedImages = await Promise.all(
+    GAME_BOARD_WEAPONS_IMAGES.map(async (src) => {
+      const image = new Image();
+      image.src = src;
+      await new Promise(res => image.onload = res);
+      return image;
+    }),
+  );
+
+  const imageSize = tileSize * GAME_BOARD_TILE_IMAGE_PERCENTAGE;
+  const imagePadding = tileSize * (1 - GAME_BOARD_TILE_IMAGE_PERCENTAGE) / 2;
+
+  const drawImage = (tile: GameBoardTile) => {
+    const x = marginSize + tile.x * tileWithMarginSize + imagePadding;
+    const y = marginSize + tile.y * tileWithMarginSize + imagePadding;
+
+    const image = loadedImages[tile.weapon];
+    if (!image) return;
+
+    ctx.drawImage(image, x, y, imageSize, imageSize);
+  };
+
   const drawRect = (tile: GameBoardTile) => {
     const x = marginSize + tile.x * tileWithMarginSize;
     const y = marginSize + tile.y * tileWithMarginSize;
@@ -100,6 +124,7 @@ onMounted(() => {
 
     ctx.fillStyle = createGradient(x, y, getTileColor(tile));
     ctx.fill();
+    if (tile.isFlipped) drawImage(tile);
   };
 
   watchEffect(() => {
