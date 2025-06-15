@@ -39,7 +39,7 @@ export function useCanvasBinds(canvasRef: Readonly<ShallowRef<HTMLCanvasElement 
     getCtx() {
       return canvasRef.value?.getContext('2d');
     },
-    onMouseMove(ev: MouseEvent) {
+    onMouseMove(ev: { clientX: number, clientY: number }) {
       requestAnimationFrame(() => {
         const mouseX = ev.clientX - canvasRect!.left;
         const mouseY = ev.clientY - canvasRect!.top;
