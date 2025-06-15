@@ -1,4 +1,9 @@
-export async function WeaponPainter(ctx: CanvasRenderingContext2D, units: UnitCalculator) {
+/**
+ * Create a function that will draw weapon on canvas based on asynchronously loaded images
+ * @param units CtxUnitCalculator instance
+ * @returns Function that will draw weapon on canvas
+ */
+export async function WeaponPainter(units: CtxUnitCalculator) {
   const loadedImages = await Promise.all(
     GAME_BOARD_WEAPONS_IMAGES.map(async (src) => {
       const image = new Image();
@@ -18,6 +23,6 @@ export async function WeaponPainter(ctx: CanvasRenderingContext2D, units: UnitCa
     const image = loadedImages[tile.weapon];
     if (!image) return;
 
-    ctx.drawImage(image, x, y, imageSize, imageSize);
+    units.ctx.drawImage(image, x, y, imageSize, imageSize);
   };
 }

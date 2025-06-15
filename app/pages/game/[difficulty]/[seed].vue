@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { UnitCalculator } from '~/utils/UnitCalculator';
-
-// const { seed, difficulty } = useGameBoardParams();
-
 const canvasRef = useTemplateRef('canvas');
 const {
   syncCanvasSizesAndGetUnitSize,
@@ -21,7 +17,7 @@ onMounted(async () => {
 
   const requiredRowUnits = GAME_BOARD_MARGIN_SIZE + Math.sqrt(tiles.length) * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE);
 
-  const units = new UnitCalculator(syncCanvasSizesAndGetUnitSize(requiredRowUnits));
+  const units = new CtxUnitCalculator(ctx, syncCanvasSizesAndGetUnitSize(requiredRowUnits));
 
   const createGradient = (x: number, y: number, gradientColors: readonly [string, string, string]) => {
     const gradient = ctx.createLinearGradient(x, y, x + units.tile, y + units.tile);
@@ -38,7 +34,7 @@ onMounted(async () => {
     return GAME_BOARD_COLOR_GRADIENT_GOLD;
   };
 
-  const drawWeapon = await WeaponPainter(ctx, units);
+  const drawWeapon = await WeaponPainter(units);
 
   const drawRect = (tile: GameBoardTile) => {
     const x = units.margin + tile.x * units.tileWithMargin;
