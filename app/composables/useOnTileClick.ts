@@ -18,8 +18,9 @@ export function useOnTileClick(getHoveredTile: () => GameBoardTile | undefined) 
     }
 
     onClick.disabled = true;
+    const weaponsMatch = hoveredTile.weapon === selectedPreviously!.weapon;
     setTimeout(() => {
-      if (hoveredTile.weapon !== selectedPreviously!.weapon) {
+      if (!weaponsMatch) {
         hoveredTile.isFlipped = false;
         selectedPreviously!.isFlipped = false;
       }
@@ -29,7 +30,7 @@ export function useOnTileClick(getHoveredTile: () => GameBoardTile | undefined) 
 
       onClick.disabled = false;
       selectedPreviously = undefined;
-    }, 1000);
+    }, weaponsMatch ? 0 : 1000);
   };
 
   onClick.disabled = false;
