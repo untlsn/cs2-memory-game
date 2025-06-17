@@ -1,4 +1,4 @@
-import type * as D from 'date-fns';
+import * as D from 'date-fns';
 
 const formatNumber = (num: number | undefined) => {
   num ||= 0;
@@ -7,4 +7,11 @@ const formatNumber = (num: number | undefined) => {
 
 export function formatDuration(duration: D.Duration) {
   return `${formatNumber(duration.hours)}:${formatNumber(duration.minutes)}:${formatNumber(duration.seconds)}`;
+}
+
+export function durationTillNow(start: Date) {
+  return D.intervalToDuration({
+    start,
+    end: new Date(),
+  });
 }

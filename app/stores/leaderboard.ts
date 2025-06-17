@@ -1,4 +1,4 @@
-type GameStoreLeaderboardElement = {
+export type GameStoreLeaderboardElement = {
   seed: number
   difficulty: string
   moves: number

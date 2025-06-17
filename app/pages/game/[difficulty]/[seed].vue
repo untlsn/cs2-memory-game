@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import * as D from 'date-fns';
 import GameBoardInfoDisplay from '~/components/GameBoardInfoDisplay.vue';
 
 const canvasRef = useTemplateRef('canvas');
@@ -14,8 +13,9 @@ const {
 } = useCanvasBinds(canvasRef);
 
 const tiles = useTiles();
+const gameStore = useGameStore();
+gameStore.checkGame(useGameBoardParams());
 
-const cheatMode = ref(false);
 const disableParallax = useDisableParallax();
 
 onMounted(async () => {
@@ -56,20 +56,12 @@ onMounted(async () => {
     ctx.filter = 'none';
     for (const tile of tiles) {
       drawRect(units.getTileParallaxPosition(tile, 0.01), createGradient(tile, 0.01));
-      if (cheatMode.value || tile.isFlipped) drawWeapon(tile, 0.01);
+      if (gameStore.cheatMode || tile.isFlipped) drawWeapon(tile, 0.01);
     }
   });
 });
 
-const moves = ref(0);
-const timeStart = ref<Date>();
-
 const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
-
-const onMove = () => {
-  timeStart.value ||= new Date();
-  moves.value++;
-};
 
 const tilesMatched = computed(() => {
   let count = 0;
@@ -85,9 +77,7 @@ const won = computed(() => tilesMatched.value === tiles.length / 2);
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <GameBoardInfoDisplay
-      :moves
       :tiles-length="tiles.length"
-      :time-start
       :tiles-matched
     />
     <canvas
@@ -98,16 +88,11 @@ const won = computed(() => tilesMatched.value === tiles.length / 2);
       @mouseleave="onMouseLeave"
 
       @touchmove.prevent="onMouseMove($event.touches[0]!)"
-      @touchend="onClick() && onMove(); onMouseLeave()"
-      @click="onClick() && onMove()"
+      @touchend="onClick() && gameStore.makeMove(); onMouseLeave()"
+      @click="onClick() && gameStore.makeMove()"
     />
-    <GameBoardCheatMode :open="cheatMode" />
-    <GameBoardWonModal
-      v-if="won && timeStart"
-      :time="timeStart"
-      :moves="moves"
-      :cheat-mode
-    />
+    <GameBoardCheatMode />
+    <GameBoardWonModal v-if="won && gameStore.time" />
     <UiDropdownMenu>
       <UiDropdownMenuTrigger class="border-1 rounded grid place-items-center p-1 fixed bottom-8 right-8">
         <NuxtIcon
@@ -124,7 +109,7 @@ const won = computed(() => tilesMatched.value === tiles.length / 2);
           <NuxtIcon name="lucide:grip-vertical" />
           {{ disableParallax ? 'Enable' : 'Disable' }} parallax
         </UiDropdownMenuItem>
-        <UiDropdownMenuItem @click="cheatMode = true">
+        <UiDropdownMenuItem @click="gameStore.cheatMode = true">
           <NuxtIcon name="lucide:eye" />
           Cheat mode
         </UiDropdownMenuItem>

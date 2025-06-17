@@ -2,11 +2,16 @@ function isDifficulty(difficulty: unknown): difficulty is GameBoardDifficulty {
   return GAME_BOARD_DIFFICULTY.includes(difficulty as GameBoardDifficulty);
 }
 
+export type GameBoardParams = {
+  difficulty: GameBoardDifficulty
+  seed: number
+};
+
 /**
  * Get params from route and validate them
  * @returns sanitized params
  */
-export function useGameBoardParams() {
+export function useGameBoardParams(): GameBoardParams {
   const { seed, difficulty } = useRoute().params;
 
   const seedNumber = Number(seed);

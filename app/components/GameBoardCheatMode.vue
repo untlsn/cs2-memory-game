@@ -1,12 +1,10 @@
 <script setup lang="ts">
 const closed = ref(false);
 
-const props = defineProps<{
-  open: boolean
-}>();
+const gameStore = useGameStore();
 
 const dialogOpen = computed(() => {
-  return props.open && !closed.value;
+  return gameStore.cheatMode && !closed.value;
 });
 </script>
 

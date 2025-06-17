@@ -2,12 +2,13 @@
 import { onWatcherCleanup } from 'vue';
 import * as D from 'date-fns';
 
-const props = defineProps<{ moves: number, tilesLength: number, timeStart?: Date, tilesMatched: number }>();
+const props = defineProps<{ tilesLength: number, tilesMatched: number }>();
+const gameStore = useGameStore();
 
 const metronome = ref(false);
 
 watchEffect(() => {
-  if (!props.timeStart) return;
+  if (!gameStore.time) return;
   const interval = setInterval(() => {
     metronome.value = !metronome.value;
   }, 1000);
@@ -19,7 +20,7 @@ watchEffect(() => {
 const time = computed(() => {
   if (props.tilesMatched != props.tilesLength / 2) void metronome.value;
 
-  const timeStart = props.timeStart;
+  const timeStart = gameStore.time;
   if (!timeStart) return '00:00:00';
 
   return formatDuration(
@@ -42,7 +43,7 @@ const time = computed(() => {
       />
       <GameBoardInfoDisplayCard
         label="Moves"
-        :value="moves"
+        :value="gameStore.moves"
         icon="lucide:mouse-pointer"
         color="var(--color-purple-600)"
       />

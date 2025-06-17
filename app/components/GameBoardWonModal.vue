@@ -1,26 +1,21 @@
 <script setup lang="ts">
 import * as D from 'date-fns';
 
-const props = defineProps<{ moves: number, time: Date, cheatMode: boolean }>();
+const gameStore = useGameStore();
 
-const duration = D.intervalToDuration({
-  start: props.time,
-  end: new Date(),
-});
-const durationString = D.formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] });
-
-const { seed, difficulty } = useGameBoardParams();
+const durationString = D.formatDuration(
+  durationTillNow(gameStore.time),
+  { format: ['hours', 'minutes', 'seconds'] },
+);
 
 const leaderboardStore = useLeaderboardStore();
 
 const save = () => {
-  if (!props.cheatMode) leaderboardStore.leaderboard.push({
-    seed,
-    difficulty,
-    moves: props.moves,
-    time: formatDuration(duration),
-    date: D.format(new Date(), 'yyyy-MM-dd HH:mm'),
-  });
+  const leaderboardElement = gameStore.getLeaderboardElement();
+
+  if (leaderboardElement) leaderboardStore.leaderboard.push(
+    leaderboardElement,
+  );
 
   navigateTo('/');
 };
@@ -36,9 +31,9 @@ const save = () => {
         You won!
       </UiDialogTitle>
       <UiDialogDescription>
-        You found all pairs in {{ moves }} moves and {{ durationString }}.
+        You found all pairs in {{ gameStore.moves }} moves and {{ durationString }}.
         <span
-          v-if="cheatMode"
+          v-if="gameStore.cheatMode"
           class="text-red-500"
         >
           But you've toggled cheat mode on, so your game score won't be saved.
