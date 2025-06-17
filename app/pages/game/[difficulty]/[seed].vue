@@ -15,6 +15,7 @@ const {
 const tiles = useTiles();
 
 const cheatMode = ref(false);
+const disableParallax = useDisableParallax();
 
 onMounted(async () => {
   const ctx = getCtx();
@@ -26,6 +27,7 @@ onMounted(async () => {
     ctx,
     syncCanvasSizesAndGetUnitSize(requiredRowUnits),
     cursorPosition,
+    disableParallax,
   );
 
   const getTileColor = (tile: GameBoardTile) => {
@@ -100,6 +102,10 @@ const onMove = () => {
           Settings
         </UiDropdownMenuLabel>
         <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem @click="disableParallax = !disableParallax">
+          <NuxtIcon name="lucide:grip-vertical" />
+          {{ disableParallax ? 'Enable' : 'Disable' }} parallax
+        </UiDropdownMenuItem>
         <UiDropdownMenuItem @click="cheatMode = true">
           <NuxtIcon name="lucide:eye" />
           Cheat mode

@@ -15,6 +15,7 @@ export class CtxUnitCalculator {
     public readonly ctx: CanvasRenderingContext2D,
     public readonly unitSize: number,
     private readonly cursorPosition: Reactive<[number, number]>,
+    private readonly disableParallax: Ref<boolean>,
   ) {
     this.tile = this.unitSize * GAME_BOARD_TILE_SIZE;
     this.margin = this.unitSize * GAME_BOARD_MARGIN_SIZE;
@@ -23,7 +24,8 @@ export class CtxUnitCalculator {
 
   getTileParallaxPosition(tile: GameBoardTile, parallaxStrength: number): Cords {
     const [cursorX, cursorY] = this.cursorPosition;
-    if (cursorX < 0 || cursorY < 0) return this.getTilePosition(tile);
+    if (this.disableParallax.value || cursorX < 0 || cursorY < 0)
+      return this.getTilePosition(tile);
     const centerX = GAME_BOARD_MARGIN_SIZE + tile.x * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE) + GAME_BOARD_TILE_SIZE / 2;
     const centerY = GAME_BOARD_MARGIN_SIZE + tile.y * (GAME_BOARD_TILE_SIZE + GAME_BOARD_MARGIN_SIZE) + GAME_BOARD_TILE_SIZE / 2;
 
