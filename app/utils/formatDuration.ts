@@ -15,3 +15,10 @@ export function durationTillNow(start: Date) {
     end: new Date(),
   });
 }
+
+export function durationFromSeconds(end: number) {
+  return D.intervalToDuration({
+    start: 0,
+    end: end * 1000,
+  });
+}

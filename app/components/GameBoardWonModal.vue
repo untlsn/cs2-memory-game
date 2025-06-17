@@ -4,7 +4,7 @@ import * as D from 'date-fns';
 const gameStore = useGameStore();
 
 const durationString = D.formatDuration(
-  durationTillNow(gameStore.time),
+  durationFromSeconds(gameStore.duration || 0),
   { format: ['hours', 'minutes', 'seconds'] },
 );
 

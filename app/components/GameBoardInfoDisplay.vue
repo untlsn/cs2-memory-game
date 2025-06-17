@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import { onWatcherCleanup } from 'vue';
 import * as D from 'date-fns';
+import { onWatcherCleanup } from 'vue';
 
 const props = defineProps<{ tilesLength: number }>();
 const gameStore = useGameStore();
 
-const metronome = ref(false);
+const allTilesMatched = computed(() => gameStore.matched.length == props.tilesLength);
 
-watchEffect(() => {
-  if (!gameStore.time) return;
-  const interval = setInterval(() => {
-    metronome.value = !metronome.value;
-  }, 1000);
+let startTime: Date | undefined;
+
+const durationUnset = computed(() => gameStore.duration == undefined);
+
+watch(() => {
+  return durationUnset.value || allTilesMatched.value;
+}, (skip) => {
+  if (skip) return;
+
+  startTime = D.subSeconds(new Date(), gameStore.duration!);
+  const interval = setInterval(gameStore.incrementTimer, 1000);
+  const syncInterval = setInterval(() => {
+    gameStore.duration = D.differenceInSeconds(new Date(), startTime!);
+  }, 10_000);
+
   onWatcherCleanup(() => {
     clearInterval(interval);
+    clearInterval(syncInterval);
   });
-});
+}, { immediate: true });
 
-const time = computed(() => {
-  if (gameStore.matched.length != props.tilesLength / 2) void metronome.value;
-
-  const timeStart = gameStore.time;
-  if (!timeStart) return '00:00:00';
-
-  return formatDuration(
-    D.intervalToDuration({
-      start: timeStart,
-      end: new Date(),
-    }),
-  );
-});
+const time = computed(() => formatDuration(durationFromSeconds(gameStore.duration || 0)));
 </script>
 
 <template>
@@ -49,7 +48,7 @@ const time = computed(() => {
       />
       <GameBoardInfoDisplayCard
         label="Pairs Found"
-        :value="`${gameStore.matched.length} / ${props.tilesLength / 2}`"
+        :value="`${gameStore.matched.length / 2} / ${props.tilesLength / 2}`"
         icon="lucide:check"
         color="var(--color-green-600)"
       />

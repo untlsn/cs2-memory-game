@@ -64,7 +64,7 @@ onMounted(async () => {
 
 const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
 
-const won = computed(() => gameStore.matched.length === tiles.length / 2);
+const won = computed(() => gameStore.matched.length === tiles.length);
 </script>
 
 <template>
@@ -84,7 +84,7 @@ const won = computed(() => gameStore.matched.length === tiles.length / 2);
       @click="onClick() && gameStore.makeMove()"
     />
     <GameBoardCheatMode />
-    <GameBoardWonModal v-if="won && gameStore.time" />
+    <GameBoardWonModal v-if="won" />
     <UiDropdownMenu>
       <UiDropdownMenuTrigger class="border-1 rounded grid place-items-center p-1 fixed bottom-8 right-8">
         <NuxtIcon
