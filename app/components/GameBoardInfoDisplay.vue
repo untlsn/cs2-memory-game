@@ -2,15 +2,7 @@
 import { onWatcherCleanup } from 'vue';
 import * as D from 'date-fns';
 
-const props = defineProps<{ moves: number, tiles: GameBoardTile[], timeStart?: Date }>();
-
-const tilesMatched = computed(() => {
-  let count = 0;
-  for (const tile of props.tiles) {
-    if (tile.isMatched) count++;
-  }
-  return count / 2;
-});
+const props = defineProps<{ moves: number, tilesLength: number, timeStart?: Date, tilesMatched: number }>();
 
 const metronome = ref(false);
 
@@ -30,7 +22,7 @@ const formatNumber = (num: number | undefined) => {
 };
 
 const time = computed(() => {
-  if (tilesMatched.value != props.tiles.length / 2) void metronome.value;
+  if (props.tilesMatched != props.tilesLength / 2) void metronome.value;
 
   const timeStart = props.timeStart;
   if (!timeStart) return '00:00:00';
@@ -61,7 +53,7 @@ const time = computed(() => {
       />
       <GameBoardInfoDisplayCard
         label="Pairs Found"
-        :value="`${tilesMatched} / ${tiles.length / 2}`"
+        :value="`${props.tilesMatched} / ${props.tilesLength / 2}`"
         icon="lucide:check"
         color="var(--color-green-600)"
       />

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import * as D from 'date-fns';
 import GameBoardInfoDisplay from '~/components/GameBoardInfoDisplay.vue';
 
 const canvasRef = useTemplateRef('canvas');
@@ -69,14 +70,25 @@ const onMove = () => {
   timeStart.value ||= new Date();
   moves.value++;
 };
+
+const tilesMatched = computed(() => {
+  let count = 0;
+  for (const tile of tiles) {
+    if (tile.isMatched) count++;
+  }
+  return count / 2;
+});
+
+const won = computed(() => tilesMatched.value === tiles.length / 2);
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <GameBoardInfoDisplay
       :moves
-      :tiles
+      :tiles-length="tiles.length"
       :time-start
+      :tiles-matched
     />
     <canvas
       ref="canvas"
@@ -90,6 +102,11 @@ const onMove = () => {
       @click="onClick() && onMove()"
     />
     <GameBoardCheatMode :open="cheatMode" />
+    <GameBoardWonModal
+      v-if="won && timeStart"
+      :time="timeStart"
+      :moves="moves"
+    />
     <UiDropdownMenu>
       <UiDropdownMenuTrigger class="border-1 rounded grid place-items-center p-1 fixed bottom-8 right-8">
         <NuxtIcon
