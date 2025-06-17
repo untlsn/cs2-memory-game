@@ -15,6 +15,7 @@ const {
 const tiles = useTiles();
 const gameStore = useGameStore();
 gameStore.checkGame(useGameBoardParams());
+gameStore.flipMatchedTiles(tiles);
 
 const disableParallax = useDisableParallax();
 
@@ -63,22 +64,13 @@ onMounted(async () => {
 
 const onClick = useOnTileClick(() => tiles.find(checkIfTileIsHovered));
 
-const tilesMatched = computed(() => {
-  let count = 0;
-  for (const tile of tiles) {
-    if (tile.isMatched) count++;
-  }
-  return count / 2;
-});
-
-const won = computed(() => tilesMatched.value === tiles.length / 2);
+const won = computed(() => gameStore.matched.length === tiles.length / 2);
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <GameBoardInfoDisplay
       :tiles-length="tiles.length"
-      :tiles-matched
     />
     <canvas
       ref="canvas"

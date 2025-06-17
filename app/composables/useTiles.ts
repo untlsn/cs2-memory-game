@@ -12,10 +12,10 @@ function SeededRandom(seed: number) {
 }
 
 export type GameBoardTile = {
+  index: number
   x: number
   y: number
   isFlipped: boolean
-  isMatched: boolean
   rarity: number
   weapon: number
 };
@@ -44,10 +44,10 @@ export function useTiles() {
   return reactive<GameBoardTile[]>(
     weaponsPair.map((weapon, i) => {
       return {
+        index: i,
         x: i % rowSize,
         y: Math.floor(i / rowSize),
         isFlipped: false,
-        isMatched: false,
         rarity: GAME_BOARD_WEAPONS_RARITY[weapon]!,
         weapon,
       };

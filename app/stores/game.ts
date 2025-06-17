@@ -11,6 +11,7 @@ export const useGameStore = defineStore('lastGame', () => {
   const seed = ref<number>(0);
   /** Difficulty of game. Necessary to check if game was played on the same link */
   const difficulty = ref<string>('easy');
+  const matched = ref<number[]>([]);
 
   /** Time when game started computed base on timeValue */
   const time = computed(() => {
@@ -20,7 +21,7 @@ export const useGameStore = defineStore('lastGame', () => {
   });
 
   return {
-    moves, cheatMode, seed, difficulty,
+    moves, cheatMode, seed, difficulty, matched,
 
     time,
 
@@ -32,6 +33,7 @@ export const useGameStore = defineStore('lastGame', () => {
         cheatMode.value = false;
         seed.value = params.seed;
         difficulty.value = params.difficulty;
+        matched.value = [];
       }
     },
     /** Create leaderboard element based on game state */
@@ -51,6 +53,11 @@ export const useGameStore = defineStore('lastGame', () => {
     makeMove: () => {
       timeValue.value ||= new Date().getTime();
       moves.value++;
+    },
+    flipMatchedTiles: (tiles: GameBoardTile[]) => {
+      for (const tile of tiles) {
+        if (matched.value.includes(tile.index)) tile.isFlipped = true;
+      }
     },
   };
 });

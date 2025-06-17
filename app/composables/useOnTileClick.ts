@@ -1,5 +1,6 @@
 export function useOnTileClick(getHoveredTile: () => GameBoardTile | undefined) {
   let selectedPreviously: GameBoardTile | undefined;
+  const gameStore = useGameStore();
 
   const playTileFlipAudio = useAudio('/audio/flip-tile.mp3');
   const playSuccessAudio = useAudio('/audio/success.mp3');
@@ -32,8 +33,10 @@ export function useOnTileClick(getHoveredTile: () => GameBoardTile | undefined) 
         selectedPreviously!.isFlipped = false;
       }
       else {
-        hoveredTile.isMatched = true;
-        selectedPreviously!.isMatched = true;
+        gameStore.matched.push(
+          hoveredTile.index,
+          selectedPreviously!.index,
+        );
         playSuccessAudio();
       }
 
