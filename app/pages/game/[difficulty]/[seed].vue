@@ -14,6 +14,8 @@ const {
 
 const tiles = useTiles();
 
+const cheatMode = ref(false);
+
 onMounted(async () => {
   const ctx = getCtx();
   if (!ctx) return;
@@ -51,7 +53,7 @@ onMounted(async () => {
     ctx.filter = 'none';
     for (const tile of tiles) {
       drawRect(units.getTileParallaxPosition(tile, 0.01), createGradient(tile, 0.01));
-      if (tile.isFlipped) drawWeapon(tile, 0.01);
+      if (cheatMode.value || tile.isFlipped) drawWeapon(tile, 0.01);
     }
   });
 });
@@ -85,6 +87,34 @@ const onMove = () => {
       @touchend="onClick() && onMove(); onMouseLeave()"
       @click="onClick() && onMove()"
     />
+    <GameBoardCheatMode :open="cheatMode" />
+    <UiDropdownMenu>
+      <UiDropdownMenuTrigger class="border-1 rounded grid place-items-center p-1 fixed bottom-8 right-8">
+        <NuxtIcon
+          name="lucide:menu"
+          class="text-[2rem]"
+        />
+      </UiDropdownMenuTrigger>
+      <UiDropdownMenuContent>
+        <UiDropdownMenuLabel class="text-xs">
+          Settings
+        </UiDropdownMenuLabel>
+        <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem @click="cheatMode = true">
+          <NuxtIcon name="lucide:eye" />
+          Cheat mode
+        </UiDropdownMenuItem>
+        <UiDropdownMenuItem as-child>
+          <NuxtLink
+            to="/"
+            class="cursor-pointer"
+          >
+            <NuxtIcon name="lucide:log-out" />
+            Exit
+          </NuxtLink>
+        </UiDropdownMenuItem>
+      </UiDropdownMenuContent>
+    </UiDropdownMenu>
   </div>
 </template>
 
