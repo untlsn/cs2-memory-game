@@ -106,6 +106,7 @@ const won = computed(() => tilesMatched.value === tiles.length / 2);
       v-if="won && timeStart"
       :time="timeStart"
       :moves="moves"
+      :cheat-mode
     />
     <UiDropdownMenu>
       <UiDropdownMenuTrigger class="border-1 rounded grid place-items-center p-1 fixed bottom-8 right-8">

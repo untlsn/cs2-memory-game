@@ -24,6 +24,7 @@ onMounted(() => {
         :difficulty
         :has-last-game
       />
+      <ClientOnly><GameBoardLeaderboard /></ClientOnly>
     </div>
   </div>
 </template>

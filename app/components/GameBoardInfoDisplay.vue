@@ -16,23 +16,18 @@ watchEffect(() => {
   });
 });
 
-const formatNumber = (num: number | undefined) => {
-  num ||= 0;
-  return num.toString().padStart(2, '0');
-};
-
 const time = computed(() => {
   if (props.tilesMatched != props.tilesLength / 2) void metronome.value;
 
   const timeStart = props.timeStart;
   if (!timeStart) return '00:00:00';
 
-  const duration = D.intervalToDuration({
-    start: timeStart,
-    end: new Date(),
-  });
-
-  return `${formatNumber(duration.hours)}:${formatNumber(duration.minutes)}:${formatNumber(duration.seconds)}`;
+  return formatDuration(
+    D.intervalToDuration({
+      start: timeStart,
+      end: new Date(),
+    }),
+  );
 });
 </script>
 

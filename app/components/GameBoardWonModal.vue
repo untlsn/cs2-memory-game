@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as D from 'date-fns';
 
-const props = defineProps<{ moves: number, time: Date }>();
+const props = defineProps<{ moves: number, time: Date, cheatMode: boolean }>();
 
 const duration = D.intervalToDuration({
   start: props.time,
@@ -9,7 +9,21 @@ const duration = D.intervalToDuration({
 });
 const durationString = D.formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] });
 
-console.log('uwu');
+const { seed, difficulty } = useGameBoardParams();
+
+const leaderboardStore = useLeaderboardStore();
+
+const save = () => {
+  if (!props.cheatMode) leaderboardStore.leaderboard.push({
+    seed,
+    difficulty,
+    moves: props.moves,
+    time: formatDuration(duration),
+    date: D.format(new Date(), 'yyyy-MM-dd HH:mm'),
+  });
+
+  navigateTo('/');
+};
 </script>
 
 <template>
@@ -23,15 +37,19 @@ console.log('uwu');
       </UiDialogTitle>
       <UiDialogDescription>
         You found all pairs in {{ moves }} moves and {{ durationString }}.
+        <span
+          v-if="cheatMode"
+          class="text-red-500"
+        >
+          But you've toggled cheat mode on, so your game score won't be saved.
+        </span>
       </UiDialogDescription>
       <UiDialogFooter>
         <UiButton
           variant="secondary"
-          as-child
+          @click="save"
         >
-          <NuxtLink to="/">
-            Go to main page
-          </NuxtLink>
+          Go to main page
         </UiButton>
       </UiDialogFooter>
     </UiDialogContent>
