@@ -21,7 +21,7 @@ export function useOnTileClick(getHoveredTile: () => GameBoardTile | undefined) 
 
     if (!selectedPreviously) {
       selectedPreviously = hoveredTile;
-      return;
+      return true;
     }
 
     onClick.disabled = true;
