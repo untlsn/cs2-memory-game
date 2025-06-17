@@ -30,7 +30,7 @@ const formatNumber = (num: number | undefined) => {
 };
 
 const time = computed(() => {
-  void metronome.value;
+  if (tilesMatched.value != props.tiles.length / 2) void metronome.value;
 
   const timeStart = props.timeStart;
   if (!timeStart) return '00:00:00';
