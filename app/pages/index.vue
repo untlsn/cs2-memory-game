@@ -4,7 +4,6 @@ import LandingPageGameSettings from '~/components/LandingPageGameSettings.vue';
 
 const seed = ref(0);
 const difficulty = ref<GameBoardDifficulty>('medium');
-const hasLastGame = ref(false);
 
 onMounted(() => {
   seed.value = Math.floor(Math.random() * 10 ** 10);
@@ -22,7 +21,6 @@ onMounted(() => {
       <LandingPageDecisionButtons
         :seed
         :difficulty
-        :has-last-game
       />
       <ClientOnly><GameBoardLeaderboard /></ClientOnly>
     </div>

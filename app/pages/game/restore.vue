@@ -3,9 +3,9 @@ const gameStore = useGameStore();
 
 const { seed, difficulty } = gameStore;
 
-if (!seed || !difficulty) navigateTo('/');
+if (!seed || !difficulty) navigateTo('/', { replace: true });
 
-navigateTo(`/game/${difficulty}/${seed}`);
+navigateTo(`/game/${difficulty}/${seed}`, { replace: true });
 </script>
 
 <template>

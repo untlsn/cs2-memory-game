@@ -16,6 +16,9 @@ export const useGameStore = defineStore('lastGame', () => {
   return {
     moves, cheatMode, seed, difficulty, matched, duration,
 
+    /** Show if game was already started. Moves is most reliable way to check it */
+    isGameStarted: computed(() => moves.value != undefined),
+
     /** Check if current game was played on the same link */
     checkGame: (params: GameBoardParams) => {
       if (seed.value !== params.seed || difficulty.value !== params.difficulty) {

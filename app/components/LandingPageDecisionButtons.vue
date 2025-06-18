@@ -2,8 +2,9 @@
 defineProps<{
   difficulty: string
   seed: number
-  hasLastGame: boolean
 }>();
+
+const gameStore = useGameStore();
 </script>
 
 <template>
@@ -35,9 +36,9 @@ defineProps<{
       </UiButton>
 
       <UiButton
-        v-if="hasLastGame"
-        variant="outline"
-        class="w-full h-12 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+        v-if="gameStore.isGameStarted"
+        variant="link"
+        class="w-full h-12 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white border"
         as-child
       >
         <NuxtLink to="/game/restore">
